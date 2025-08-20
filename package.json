@@ -14,8 +14,8 @@
     "ui": "pnpm -F @moten/ui dev",
     "ui:build": "pnpm -F @moten/ui build",
     "clear": "rimraf --glob ./node_modules ./packages/**/node_modules ./packages/**/dist",
-    "play:vue3": "pnpm -F @moten/ui build && pnpm -F @moten/playground-vue3 dev",
-    "play:vue2": "pnpm -F @moten/ui build && pnpm -F @moten/playground-vue2 serve",
+    "play:vue3": "pnpm -F @moten/playground-vue3 dev",
+    "play:vue2": "pnpm -F @moten/playground-vue2 serve",
     "prepare": "husky",
     "lint": "pnpm -F @moten/admin lint"
   },
@@ -33,12 +33,12 @@
   "pnpm": {
     "packageExtensions": {
       "vue-template-compiler": {
-        "devDependencies": {
+        "dependencies": {
           "vue": "^2.7.16"
         }
       },
       "vue-template-compiler@2.7.16": {
-        "devDependencies": {
+        "dependencies": {
           "vue": "^2.7.16"
         }
       }
