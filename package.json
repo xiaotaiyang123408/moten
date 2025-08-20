@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "packageManager": "pnpm@9.12.1",
   "engines": {
     "node": "^20.19.0 || >=22.12.0",
@@ -17,7 +18,7 @@
     "play:vue3": "pnpm -F @moten/playground-vue3 dev",
     "play:vue2": "pnpm -F @moten/playground-vue2 serve",
     "prepare": "husky",
-    "lint": "pnpm -F @moten/admin lint"
+    "lint": "node ./scripts/lint.js"
   },
   "lint-staged": {
     "*.{js,ts,vue}": "pnpm lint"
@@ -50,6 +51,7 @@
     "cz-vinyl": "^2.5.4",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.5",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "zx": "^8.8.0"
   }
 }
