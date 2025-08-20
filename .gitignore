@@ -12,7 +12,7 @@ dist
 coverage
 dist-ssr
 *.local
-md.md
+*.md
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
