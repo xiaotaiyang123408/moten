@@ -1,0 +1,6 @@
+@use "sass:math";
+
+@function vw($px) {
+  @return math.div($px, 375) * 100vw;
+  //除调用math.iv
+}

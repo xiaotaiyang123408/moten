@@ -1,0 +1,2 @@
+import { COMPONENT_PREFIX as _COMPONENT_PREFIX } from '@moten/ui'
+export const COMPONENT_PREFIX = _COMPONENT_PREFIX

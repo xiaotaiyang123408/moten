@@ -1,4 +1,4 @@
 #!/usr/bin/env zx
 import 'zx/globals'
 
-$`pnpm -F @moten/admin lint`
+$`pnpm -F @moten/editor lint`

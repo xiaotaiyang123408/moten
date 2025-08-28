@@ -10,9 +10,11 @@
     "pnpm": "^9.12.1"
   },
   "scripts": {
+    "dev": "node ./scripts/dev.js",
     "preinstall": "npx only-allow pnpm",
     "in": "pnpm i -r",
     "ui": "pnpm -F @moten/ui dev",
+    "editor": "pnpm -F @moten/editor dev",
     "ui:build": "pnpm -F @moten/ui build",
     "clear": "rimraf --glob ./node_modules ./packages/**/node_modules ./packages/**/dist",
     "play:vue3": "pnpm -F @moten/playground-vue3 dev",
