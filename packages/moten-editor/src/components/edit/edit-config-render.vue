@@ -1,6 +1,6 @@
 <template>
   <div class="edit-config-render">
-    <el-form label-width="auto">
+    <el-form label-width="auto" :rules="rules" :model="form" ref="ruleFormRef">
       <div v-for="(item, index) in list" :key="index">
         <component
           v-if="getComponent(item)"
@@ -16,25 +16,66 @@
   </div>
 </template>
 <script setup lang="ts">
+import { transfer } from '@/config/nested'
+import { pageSchema, type BlockSchema, type BlockSchemaKeys } from '@/config/schema'
 import { useEditStore } from '@/stores/edit'
 import { batchDynamicComponents } from '@/utils'
+import { ref, watch } from 'vue'
 
 const edit = useEditStore()
-defineProps({
+const props = defineProps({
   list: {
     type: Array,
     default: () => [],
   },
+  schema: {
+    type: Object as () => BlockSchema[BlockSchemaKeys],
+    default: () => {},
+  },
 })
-const emit = defineEmits(['callback', 'update'])
+const emit = defineEmits(['callback'])
 const callback = (data: any) => {
   emit('callback', data)
-}
-const update = (data: any) => {
-  emit('update', data)
 }
 const getComponent = (item: any) => {
   const code = item.properties[edit.viewport].code
   return batchDynamicComponents(code, import.meta.glob('@/components/config/**/*.vue'))
 }
+
+const ruleFormRef = ref()
+const form = ref<any>({})
+const rules = ref(transfer(props.schema, 'rules'))
+
+const update = (params: any) => {
+  const list = Object.entries(params || {})
+  list.forEach(([key, value]) => {
+    form.value[key] = value
+  })
+}
+//先对JSONschema进行校验
+//然后对表单进行校验
+//将rules从JSONschema中取出
+const submitForm = () => {
+  setTimeout(() => {
+    if (!ruleFormRef.value) return
+    ruleFormRef.value.validate((valid: any, fields: any) => {
+      if (valid) {
+        console.warn('form submit!')
+        return
+      }
+      console.warn('form error !', fields)
+    })
+  }, 200)
+}
+//啥时候校验呢？
+submitForm() //页面每次渲染进行一次校验
+watch(
+  () => form.value,
+  () => {
+    submitForm()
+  },
+  {
+    deep: true,
+  },
+)
 </script>

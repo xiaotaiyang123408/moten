@@ -1,12 +1,12 @@
 <template>
   <div class="config-input">
-    <el-form-item :label="label">
+    <el-form-item :label="label" :prop="key + '.' + viewport">
       <el-input v-model="input" :placeholder="placeholder" class="input" />
     </el-form-item>
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref, toRefs, watch } from 'vue'
 const props = defineProps({
   data: {
     type: Object,
@@ -17,11 +17,12 @@ const props = defineProps({
     default: () => 'desktop',
   },
 })
-const emit = defineEmits(['callback'])
+const { data } = toRefs(props)
+const emit = defineEmits(['callback', 'update'])
 const input = ref<string>('')
 const label = ref<string>('')
-const { formData, key, id } = props.data
-const { title, placeholder, default: defaultValue } = props.data.properties[props.viewport]
+const { formData, key, id } = data.value
+const { title, placeholder, default: defaultValue } = data.value.properties[props.viewport]
 label.value = title
 
 watch(
@@ -34,7 +35,7 @@ watch(
   },
 )
 watch(
-  () => input.value,
+  input,
   (value) => {
     let data = {}
     const _value = value || ''
@@ -47,6 +48,12 @@ watch(
       },
       id, //传递id，进行区分
     })
+    emit('update', {
+      [key]: data,
+    })
+  },
+  {
+    immediate: true,
   },
 )
 </script>

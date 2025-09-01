@@ -1,6 +1,6 @@
 <template>
   <div class="config-files">
-    <el-form-item :label="label">
+    <el-form-item :label="label" :prop="key + '.' + viewport">
       <div class="avatar-uploader" @click="fileClick">
         <img v-if="imageUrl" :src="imageUrl" class="avatar" />
         <v-icon v-else class="icon" icon="upload" />
@@ -10,6 +10,8 @@
 </template>
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
+import { useFormItem } from 'element-plus'
+const { formItem } = useFormItem() //调用element-plus校验规则
 const props = defineProps({
   data: {
     type: Object,
@@ -20,7 +22,7 @@ const props = defineProps({
     default: () => 'desktop',
   },
 })
-const emit = defineEmits(['callback'])
+const emit = defineEmits(['callback', 'update'])
 const { formData, key, id } = props.data
 const { title, default: defaultValue } = props.data.properties[props.viewport]
 
@@ -52,6 +54,7 @@ watch(
 watch(
   () => imageUrl.value,
   (value) => {
+    formItem?.validate('change').catch((err: any) => console.warn(err))
     let data = {}
     const _value = value || ''
     if (Object.values(formData || {}).length < 2) data = { desktop: _value, mobile: _value }
@@ -63,6 +66,12 @@ watch(
       },
       id, //传递id，进行区分
     })
+    emit('update', {
+      [key]: data,
+    })
+  },
+  {
+    immediate: true,
   },
 )
 </script>
@@ -77,11 +86,12 @@ watch(
     height: 90px;
     background: #f5f7fa;
     border: 1px dashed #c0ccda;
-    border-radius: 6px;
+    border-radius: var(--border-radius);
     .avatar {
       width: 90px;
       height: 90px;
       background: cover;
+      border-radius: var(--border-radius);
     }
     .icon {
       width: 30px;

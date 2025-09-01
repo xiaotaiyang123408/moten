@@ -4,7 +4,7 @@ import { createNameSpace } from "@/utils/components";
 import { props } from "./props";
 import MoLink from "../link/index.vue";
 import MoEmpty from "../empty/index.vue";
-import { inject } from 'vue-demi';
+import { inject } from "vue-demi";
 const { name, n } = createNameSpace("image");
 
 //@ts-ignore
@@ -16,28 +16,27 @@ export default defineComponent({
     MoEmpty,
   },
   setup(props) {
-    const platform= inject('platform') as string
-    console.log(platform, 'platform')
+    const platform = inject("platform") as string;
     const { data, viewport } = toRefs(props);
     const classes = computed(() => [n()]);
     const display = computed(() => {
-      if (typeof data.value?.display?.[viewport.value] === 'boolean') 
-      {
-        return data.value?.display?.[viewport.value]
-      }else{
-        return true
+      if (typeof data.value?.display?.[viewport.value] === "boolean") {
+        return data.value?.display?.[viewport.value];
+      } else {
+        return true;
       }
-    }
-  );
+    });
     const src = computed(() => data.value?.src?.[viewport.value] || "");
     const link = computed(() => data.value?.link?.[viewport.value] || "");
     const width = computed(() => data.value?.width?.[viewport.value] || "");
     const height = computed(() => data.value?.height?.[viewport.value] || "");
     const displayStyle = computed(() => {
-      if(platform ==='editor'){
-        return !display.value?{opacity:0.4,filter:'brightness(0.7)'}:{}
-      }else{
-        return !display.value?{display:'none'}:{}
+      if (platform === "editor") {
+        return !display.value
+          ? { opacity: 0.4, filter: "brightness(0.7)" }
+          : {};
+      } else {
+        return !display.value ? { display: "none" } : {};
       }
     });
     const styles = computed(() => ({
@@ -52,7 +51,7 @@ export default defineComponent({
       link,
       width,
       height,
-      displayStyle
+      displayStyle,
     };
   },
 });
@@ -61,7 +60,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <div :class="classes" :style="[displayStyle,]">
+  <div :class="classes" :style="[displayStyle]">
     <mo-link v-if="src" :to="link" target="_blank">
       <img v-bind="$attrs" class="image" alt="" :src="src" :style="styles" />
     </mo-link>

@@ -1,6 +1,6 @@
 <template>
   <div class="config-column">
-    <el-form-item>
+    <el-form-item :prop="key + '.' + viewport">
       <div class="list">
         <div v-for="(item, index) in column" :key="index" class="item">
           <div v-html="widthFormat(item)" class="input" />
@@ -30,7 +30,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['callback'])
+const emit = defineEmits(['callback', 'update'])
 
 const { data } = toRefs(props)
 const { formData, key, id } = data.value
@@ -48,23 +48,28 @@ watch(
   },
   {
     immediate: true,
-    deep: true,
   },
 )
 
-watch(column, (value) => {
-  if (value.length > maxItems) return
+watch(
+  column,
+  (value) => {
+    if (value.length > maxItems) return
 
-  const _value = value
-  const data = { desktop: _value, mobile: _value }
+    const _value = value
+    const data = { desktop: _value, mobile: _value }
 
-  emit('callback', {
-    data: {
-      [key]: data,
-    },
-    id,
-  })
-})
+    emit('callback', {
+      data: {
+        [key]: data,
+      },
+      id,
+    })
+  },
+  {
+    immediate: true,
+  },
+)
 
 const updateNumber = (length: number) => Array.from({ length: length }, () => 1 / length)
 const widthFormat = (width: number) => parseInt(String(width * 10000)) / 100 + '%'

@@ -1,6 +1,6 @@
 <template>
   <div class="config-color">
-    <el-form-item :label="label"> </el-form-item>
+    <el-form-item :label="label" :prop="data.key + '.' + viewport"> </el-form-item>
   </div>
 </template>
 <script lang="ts" setup>
@@ -15,7 +15,7 @@ const props = defineProps({
     default: () => 'desktop',
   },
 })
-defineEmits(['callback'])
+defineEmits(['callback', 'update'])
 const label = ref<string>('')
 const { title } = props.data.properties[props.viewport]
 label.value = title

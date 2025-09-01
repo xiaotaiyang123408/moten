@@ -37,20 +37,13 @@ watch(
     }
   },
   {
-    immediate: true,
+    deep: true,
   },
 )
 watch(
-  () => edit.isMobileViewPort,
+  () => edit.configPanelShow,
   (value) => {
-    if (value) {
-      edit.setConfigPanelShow(true)
-    } else {
-      edit.setConfigPanelShow(false)
-    }
-  },
-  {
-    immediate: true,
+    if (!value) edit.setCurrentSelect({})
   },
 )
 </script>

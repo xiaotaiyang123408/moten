@@ -1,17 +1,18 @@
 <template>
   <div class="edit-config-page">
-    <edit-config-render :list="list" @callback="callback"> </edit-config-render>
+    <edit-config-render :list="list" @callback="callback" :schema="schema"> </edit-config-render>
   </div>
 </template>
 <script lang="ts" setup>
 import { pageSchema, type PageSchema } from '@/config/schema'
 import { useEditStore } from '@/stores/edit'
+import type { CallbackData } from '@/types/edit'
 import deepmerge from 'deepmerge'
 import { ref } from 'vue'
 const edit = useEditStore()
+const schema = ref<PageSchema>(pageSchema)
 const properties = pageSchema.properties
 const list = ref<(typeof properties)[keyof typeof properties][]>([])
-
 const listResult = Object.fromEntries(
   Object.entries(properties).map(([key, value]) => {
     return [
@@ -25,8 +26,7 @@ const listResult = Object.fromEntries(
   }),
 )
 list.value = [...Object.values(listResult)]
-
-const callback = (params: { data: object }) => {
+const callback = (params: { data: CallbackData }) => {
   const { data } = params
   const formData = edit.pageConfig || {}
   edit.setPageConfig(

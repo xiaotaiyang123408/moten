@@ -1,7 +1,8 @@
 import type { BaseBlock, CallbackData } from '@/types/edit'
 import { nanoid } from '@/utils/index'
 import deepmerge from 'deepmerge'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, isEqual } from 'lodash'
+import type { BlockSchema, BlockSchemaKeys } from './schema'
 
 /**
  * column嵌套class
@@ -46,68 +47,88 @@ export const sleep = (delay: number) => {
 }
 
 /**
- * 找到相应id中的formData，进行更新
- * 因为id不一定在第一层，所以遇到嵌套时要递归调用
+ * 替换 node id
+ * @param node
+ * @returns
  */
-export const findNodeById = (blockConfig: BaseBlock[], id: string, data: CallbackData) => {
-  const array: BaseBlock[] = cloneDeep(blockConfig)
-  for (let i = 0; i < array.length; i++) {
-    const node = array[i]
-
-    if (node.id === id) {
-      node.formData = deepmerge.all([node.formData, data], {
-        arrayMerge: (target, source) => source,
-      })
-      if (node.nested && node.children?.length && node.code === 'column') {
-        const children = cloneDeep(node.children || [])
-        const length = data.cols?.desktop?.length
-        const childrenLength = children.length
-        if (length && childrenLength < length) {
-          for (let i = 0; i < length - children.length; i++) {
-            children.splice(children.length, 0, [])
-          }
-          node.children = children
-        } else {
-          node.children = children.slice(0, length)
-        }
-      }
-      return array
-    }
-    //该节点不匹配，检查是否为嵌套结构，若嵌套递归
-    if (node.nested && node.children?.length) {
-      for (let j = 0; j < node.children.length; j++) {
-        node.children[j] = findNodeById(node.children[j], id, data)
+export const replaceNodeId = (node: any) => {
+  if (!node) return node
+  const newNode = cloneDeep(node)
+  const { children } = newNode || {}
+  if (children?.length) {
+    for (let i = 0; i < children.length; i++) {
+      for (let j = 0; j < children[i].length; j++) {
+        children[i][j] = replaceNodeId(children[i][j])
       }
     }
   }
-  return array
-  //配置数组属性覆盖，在deepmerge合并时，相同属性使用后面一个覆盖前面一个
-  //默认情况是不会进行覆盖相同属性不同值，均会被保留
-  //因为我们在修改的时候，可能只会修改mobile或者desktop，如果采用Object.assign({},node.formData,data)的话，会导致另一个数据丢失
-  //所以这里使用了deepmerge---库，进行合并
+  return clone(newNode)
 }
 
-export const handleNodeById = (blockconfig: BaseBlock[], id: string, type: string) => {
-  //找到对应id
-  const array: BaseBlock[] = cloneDeep(blockconfig)
+export const handleNodeById = (arr: BaseBlock[], nodeId: string, type: 'copy' | 'clear') => {
+  return findNodeById(arr, nodeId, (params) => {
+    const { array, node, index } = params
+    if (type === 'copy') array.splice(index, 0, replaceNodeId(node))
+    if (type === 'clear') array.splice(index, 1)
+  })
+}
+export const transfer = (b: BlockSchema[BlockSchemaKeys] | undefined, key = 'default'): void => {
+  if (!b) return
+  return Object.fromEntries(
+    Object.entries(b.properties).map((item: any) => {
+      const [keyP, valueP] = item
+      if (valueP.properties) return [keyP, transfer(valueP, key)]
+      return [keyP, valueP[key]]
+    }),
+  )
+}
+
+export interface FindNodeByIdCallBack {
+  array: BaseBlock[]
+  node: BaseBlock[][number]
+  index: number
+}
+
+/**
+ * 找到相应id里的FormData做更新
+ * @param arr
+ * @param nodeId
+ * @param callback
+ * @returns
+ */
+export const findNodeById = (
+  arr: BaseBlock[],
+  nodeId: string,
+  callback: (params: FindNodeByIdCallBack) => void,
+) => {
+  const array = cloneDeep(arr)
+
   for (let i = 0; i < array.length; i++) {
-    const item = array[i]
-    if (item.id === id) {
-      if (type === 'copy') {
-        const newItem = cloneDeep(item)
-        newItem.id = nanoid(8)
-        array.splice(i + 1, 0, newItem)
-      } else {
-        array.splice(i, 1)
-      }
-      console.log(array, 'array')
+    const element = array[i] as any
+    if (element.id === nodeId) {
+      // 如果找到了匹配的节点，直接回调返回
+      callback({
+        array,
+        node: element,
+        index: i,
+      })
       return array
     }
-    if (item.nested && item.children?.length) {
-      for (let j = 0; j < item.children.length; j++) {
-        item.children[j] = handleNodeById(item.children[j], id, type)
+
+    if (element.children?.length) {
+      // 如果节点有子节点，则递归调用 findNodeById 函数
+      for (let j = 0; j < element.children.length; j++) {
+        const elementChildren = element.children[j]
+        if (!elementChildren.length) continue
+        const newChildren = findNodeById(elementChildren, nodeId, callback)
+        if (!isEqual(newChildren, elementChildren)) {
+          // 如果子节点数组有更新，则更新当前节点的子节点数组
+          if (newChildren) element.children[j] = newChildren
+          return array
+        }
       }
     }
   }
+
   return array
 }

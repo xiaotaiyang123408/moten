@@ -1,6 +1,6 @@
 <template>
   <div class="edit-config-block">
-    <edit-config-render :list="list" @callback="callback" @update="update">
+    <edit-config-render :list="list" @callback="callback" :schema="schema">
       <div v-if="!edit.currentSelect">
         <el-empty description="请在左侧拖入组件，点击组件进行配置">
           <template #image>
@@ -13,26 +13,26 @@
 </template>
 <script lang="ts" setup>
 import { findNodeById } from '@/config/nested'
-import { blockSchema, type BlockSchemaKeys } from '@/config/schema'
+import { type BlockSchema, blockSchema, type BlockSchemaKeys } from '@/config/schema'
 import { useEditStore } from '@/stores/edit'
-import type { BaseBlock, CallbackData } from '@/types/edit'
+import type { BaseBlock } from '@/types/edit'
 import deepmerge from 'deepmerge'
 import { ref, watch } from 'vue'
-import { cloneDeep } from 'lodash'
 
 const edit = useEditStore()
 const list = ref<BaseBlock[]>([])
+const schema = ref<BlockSchema[BlockSchemaKeys]>()
 watch(
   () => edit.currentSelect,
-  (value) => {
-    if (!value || !value.code) {
+  () => {
+    const code = edit.currentSelect?.code as BlockSchemaKeys
+    const properties = blockSchema[code]?.properties
+    if (!code || !properties) {
       list.value = []
       return
     }
-    const code = value.code as BlockSchemaKeys
-    const properties = blockSchema[code]?.properties
-    if (!properties) return
-    const { id, formData } = value as any
+    schema.value = blockSchema[code]
+    const { id, formData } = edit.currentSelect as any
     const listResult = Object.fromEntries(
       Object.entries(properties).map(([key, value]) => {
         return [
@@ -49,39 +49,35 @@ watch(
     list.value = [...Object.values(listResult)]
   },
   {
-    immediate: true,
     deep: true,
+    immediate: true,
   },
 )
-const callback = (params: { data: CallbackData; id: string }) => {
+const callback = (params: { data: object; id: string }) => {
   const { data, id } = params
   if (!id) return
-  const blockConfig = edit.blockConfig || [] //存储所有Config信息
-  const newBlockConfig = findNodeById(blockConfig, id, data)
-  edit.setBlockConfig(newBlockConfig)
-  if (edit.currentSelect?.id === id) {
-    const currentNode = cloneDeep(edit.currentSelect)
-    currentNode.formData = deepmerge.all([edit.currentSelect.formData || {}, data], {
-      arrayMerge: (target, source) => source,
+  const blockConfig = edit.blockConfig || []
+  const newBlockConfig = findNodeById(blockConfig, id, (params: any) => {
+    const { array, index, node } = params
+    const overwriteMerge = (_destinationArray: any, sourceArray: any) => sourceArray
+    array[index].formData = deepmerge(node.formData, data, {
+      arrayMerge: overwriteMerge,
     })
-    if (currentNode.nested && currentNode.code === 'column') {
-      const children = cloneDeep(currentNode.children || [])
-      const length = data.cols?.desktop?.length
-      const childrenLength = children.length
-      if (length && childrenLength < length) {
-        for (let i = 0; i < length - children.length; i++) {
-          children.splice(children.length, 0, [])
-        }
-        currentNode.children = children
-      } else if (length) {
-        currentNode.children = children.slice(0, length)
+
+    if (node.nested && node.code === 'column') {
+      const cols = node.formData?.cols?.desktop || [0.5, 0.5]
+      const oldCols = node.children || [[], []]
+      if (oldCols.length > cols.length) {
+        const count = oldCols.length - cols.length
+        array[index].children?.splice(oldCols.length - count, count)
+      } else {
+        const count = cols.length - oldCols.length
+        const diff = Array.from({ length: count }, () => [])
+        array[index].children?.push(...diff)
       }
     }
-    edit.setCurrentSelect(currentNode)
-  }
-}
-const update = (params: object) => {
-  console.log(params, 'update')
+  })
+  edit.setBlockConfig(newBlockConfig)
 }
 </script>
 <style scoped lang="scss">

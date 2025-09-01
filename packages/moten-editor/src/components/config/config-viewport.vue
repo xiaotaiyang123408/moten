@@ -80,16 +80,16 @@ const change = (value: ViewportList['value']) => {
 watch(
   () => formData,
   (value) => {
-    console.log(value, 'value')
     const _formData = value?.[key]
     const defaultValueIndex = Math.max(
       list.value.findIndex((v) => v.value === _formData || defaultValue),
       0,
     )
-
     list.value[defaultValueIndex].default = true
-
     change(list.value[defaultValueIndex].value)
+  },
+  {
+    immediate: true,
   },
 )
 </script>
