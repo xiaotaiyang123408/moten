@@ -34,6 +34,11 @@ watch(
   (value) => {
     if (value?.id) {
       edit.setConfigPanelShow(true)
+      if (value?.code === 'canvas') {
+        edit.setIsCanvasShow(true)
+      } else {
+        edit.setIsCanvasShow(false)
+      }
     }
   },
   {

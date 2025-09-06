@@ -36,7 +36,7 @@ export class UserController {
                     if (result_data.disable === 1) return res.json(response.accessDenied())
                     //添加token
                     if (result_data) {
-                        const token = jwt.sign({ id: result_data.id }, SECRET_KEY, { expiresIn: '24h' })
+                        const token = jwt.sign({ id: result_data.user_id }, SECRET_KEY, { expiresIn: '24h' })
                         res.json(response.success({ ...result_data, token }))
                     }
                     else res.json(response.authorizeFailed())

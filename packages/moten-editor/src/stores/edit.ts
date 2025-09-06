@@ -5,6 +5,7 @@ export const useEditStore = defineStore('edit', {
     currentSelect: null as BaseBlock | null,
     viewport: 'desktop' as Viewports,
     configPanelShow: false,
+    isCanvasShow: false,
     blockConfig: [] as BaseBlock[],
     pageConfig: {} as BasePage,
   }),
@@ -17,6 +18,9 @@ export const useEditStore = defineStore('edit', {
     },
     setConfigPanelShow(value: boolean) {
       this.configPanelShow = value
+    },
+    setIsCanvasShow(value: boolean) {
+      this.isCanvasShow = value
     },
     setBlockConfig(value: BaseBlock[]) {
       this.blockConfig = value

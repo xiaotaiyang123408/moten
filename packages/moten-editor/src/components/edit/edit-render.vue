@@ -4,17 +4,23 @@
       :list="list"
       :group="dragGroup"
       :class="edit.isMobileViewPort ? 'is-mobile' : 'is-desktop'"
+      :style="pageStyle"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import { dragGroup } from '@/config/nested'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useEditStore } from '@/stores/edit'
 import type { BaseBlock } from '@/types/edit'
 const edit = useEditStore()
 const list = ref<BaseBlock[]>([])
+const pageStyle = computed(() => {
+  return {
+    background: edit.pageConfig.background?.[edit.viewport] || '',
+  }
+})
 watch(
   () => list.value,
   (value) => {
@@ -61,18 +67,5 @@ watch(
     margin-bottom: 20px;
     background: var(--color-edit-render-block-bg);
   }
-  // .empty {
-  //   position: absolute;
-  //   z-index: 0;
-  //   top: 0;
-  //   top: 0;
-  //   width: inherit;
-  // }
-  // .render {
-  //   position: relative;
-  //   z-index: 1;
-  //   width: 100%;
-  //   height: 100%;
-  // }
 }
 </style>

@@ -37,7 +37,15 @@
             :key="element.id"
           >
             <template #default="{ item, index }">
+              <edit-render-canvas
+                :class="nestedClass"
+                v-if="element.code === 'canvas'"
+                :key="element.id + '-canvas-' + index"
+                :list="item"
+                :parent="element.code"
+              />
               <edit-render-drag
+                v-else
                 :list="item"
                 :level="level + 1"
                 :group="group"
@@ -84,7 +92,7 @@ import { nestedClass } from '@/config/nested'
 import { COMPONENT_PREFIX } from '@/config/code'
 import { cloneDeep } from 'lodash'
 defineOptions({ name: 'EditRenderDrag' })
-defineProps({
+const props = defineProps({
   list: {
     type: Array,
     default: () => [],
@@ -105,7 +113,7 @@ defineProps({
     default: 1,
   },
 })
-
+console.log('list', props.list)
 const renderComponentCode = computed(() => {
   return (element: { code: string }) => {
     return COMPONENT_PREFIX + '-' + element.code

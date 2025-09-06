@@ -1,9 +1,9 @@
 const SUCCESS = { code: 200, message: 'success' }
-const FAILED = { code: 500, message: 'fail' }
+const FAILED = { code: 500, message: 'fail:' }
 const VALIDATE_FAILED = { code: 400, message: 'validate failed' }
 const API_NOT_FOUND = { code: 404, message: 'api not found' }
 const AUTHORIZE_FAILED = { code: 401, message: 'authorize failed' }
-const ACCED_DENIED = { code: 403, message: 'acced denied' }
+const ACCED_DENIED = { code: 403, message: 'access denied' }
 class Response {
     /**
      * 返回code

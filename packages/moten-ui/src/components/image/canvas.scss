@@ -1,0 +1,24 @@
+@include b("canvas") {
+  .canvas {
+    .platform-user {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .image {
+      @include res(width, 100, 100);
+      @include res(height, 100, 100);
+    }
+    .no-image {
+      @include res(width, 100, 100);
+      @include res(height, 100, 100);
+    }
+    :deep(.mo-empty .image) {
+      @include res(width, 40, 60);
+    }
+    :deep(.mo-empty .description) {
+      @include res(font-size, 12, 12);
+      @include res(margin-top, 12, 12);
+    }
+  }
+}

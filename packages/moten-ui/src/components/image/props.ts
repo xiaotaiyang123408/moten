@@ -21,6 +21,14 @@ export type MoImagePropsData = {
     desktop: string;
     mobile: string;
   };
+  top?: {
+    desktop: string;
+    mobile: string;
+  };
+  left?: {
+    desktop: string;
+    mobile: string;
+  };
 };
 
 export const props = {
@@ -47,6 +55,15 @@ export const props = {
         desktop: "",
         mobile: "",
       },
+      top: {
+        desktop: "",
+        mobile: "",
+      },
+
+      left: {
+        desktop: "",
+        mobile: "",
+      },
     }),
   },
   viewport: {
@@ -55,5 +72,9 @@ export const props = {
     validator(val: string) {
       return ["desktop", "mobile"].includes(val);
     },
+  },
+  parent: {
+    type: String,
+    default: "",
   },
 };

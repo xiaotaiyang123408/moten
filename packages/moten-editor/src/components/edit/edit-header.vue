@@ -31,7 +31,7 @@ import AjvErrors from 'ajv-errors'
 import { nextTick, ref, watch } from 'vue'
 const ajv = new Ajv({ allErrors: true })
 ajv.addKeyword({
-  keyword: ['placeholder', 'rules', 'code'],
+  keyword: ['placeholder', 'rules', 'code', 'isCanvas'],
 })
 AjvErrors(ajv)
 

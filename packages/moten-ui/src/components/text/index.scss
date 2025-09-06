@@ -1,0 +1,14 @@
+@include b("text") {
+  .text {
+    width: 100%;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+  .empty {
+    width: 100%;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+  }
+}

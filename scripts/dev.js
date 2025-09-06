@@ -19,6 +19,7 @@ function ex(cmd, callback) {
 }
 function RunDev() {
     let signal = true;
+    ex('pnpm serve')
     ex('pnpm ui', (msg) => {
         if (!signal) return
         if (msg.includes('built in')) {

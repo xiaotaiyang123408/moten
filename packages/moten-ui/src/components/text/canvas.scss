@@ -1,0 +1,19 @@
+@include b("text") {
+  .canvas {
+    .platform-user {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .text {
+      @include res(width, 100, 100);
+      @include res(height, 100, 100);
+    }
+    .empty {
+      @include res(width, 100, 100);
+      @include res(height, 100, 100);
+      @include res(font-size, 20, 20);
+      @include res(font-weight, bold, bold);
+    }
+  }
+}

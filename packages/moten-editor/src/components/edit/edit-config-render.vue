@@ -1,26 +1,31 @@
 <template>
   <div class="edit-config-render">
     <el-form label-width="auto" :rules="rules" :model="form" ref="ruleFormRef">
-      <div v-for="(item, index) in list" :key="index">
-        <component
-          v-if="getComponent(item)"
-          :is="getComponent(item)"
-          :data="item"
-          :viewport="edit.viewport"
-          @callback="callback"
-          @update="update"
-        >
-        </component>
-      </div>
+      <transition-group name="fade">
+        <div v-for="(item, index) in list" :key="index">
+          <component
+            v-if="
+              (getComponent(item) && !itemCanvas(item)) ||
+              (itemCanvas(item) && inCanvas && getComponent(item))
+            "
+            :is="getComponent(item)"
+            :data="item"
+            :viewport="edit.viewport"
+            @callback="callback"
+            @update="update"
+          >
+          </component>
+        </div>
+      </transition-group>
     </el-form>
   </div>
 </template>
 <script setup lang="ts">
 import { transfer } from '@/config/nested'
-import { pageSchema, type BlockSchema, type BlockSchemaKeys } from '@/config/schema'
+import { type BlockSchema, type BlockSchemaKeys } from '@/config/schema'
 import { useEditStore } from '@/stores/edit'
 import { batchDynamicComponents } from '@/utils'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const edit = useEditStore()
 const props = defineProps({
@@ -37,7 +42,12 @@ const emit = defineEmits(['callback'])
 const callback = (data: any) => {
   emit('callback', data)
 }
+const itemCanvas = (item: any) => {
+  return item.properties[edit.viewport].inCanvas
+}
+const inCanvas = computed(() => edit.currentSelect?.parent === 'canvas')
 const getComponent = (item: any) => {
+  console.log(item, 'item')
   const code = item.properties[edit.viewport].code
   return batchDynamicComponents(code, import.meta.glob('@/components/config/**/*.vue'))
 }

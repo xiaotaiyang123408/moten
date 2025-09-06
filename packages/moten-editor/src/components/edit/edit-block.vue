@@ -18,22 +18,22 @@
     <div class="line"></div>
     <div class="right">
       <el-collapse v-model="activeName" class="collapse">
-        <el-collapse-item title="基础组件" name="1">
+        <el-collapse-item title="基础组件" name="1" v-show="!edit.isCanvasShow">
           <edit-block-drag
             :list="baseBlocks"
             :sort="false"
             :group="{ name: dragGroup, pull: 'clone', put: false }"
           />
         </el-collapse-item>
-        <el-collapse-item title="高级组件" name="2">
+        <el-collapse-item title="高级组件" name="2" v-show="!edit.isCanvasShow">
           <edit-block-drag
             :list="seniorBlocks"
             :sort="false"
             :group="{ name: dragGroup, pull: 'clone', put: false }"
           />
         </el-collapse-item>
-        <el-collapse-item title="画布组件" name="3">
-          <edit-block-drag :list="canvasBlocks" />
+        <el-collapse-item title="画布组件" name="3" v-show="edit.isCanvasShow">
+          <edit-block-canvas :list="canvasBlocks" />
         </el-collapse-item>
       </el-collapse>
     </div>
@@ -45,6 +45,8 @@
 import { dragGroup } from '@/config/nested'
 import { ref } from 'vue'
 import { baseBlocks, seniorBlocks, canvasBlocks } from '@/config/block'
+import { useEditStore } from '@/stores/edit'
+const edit = useEditStore()
 const menuList = ref([
   {
     icon: 'block',

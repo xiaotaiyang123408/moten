@@ -86,12 +86,28 @@ const width = Type.String({
     },
   ],
 });
+const top = Type.String({
+  code: "config-input",
+  title: "居上",
+  default: "0px",
+  placeholder: "请输入居上位置",
+  inCanvas: true,
+});
+const left = Type.String({
+  code: "config-input",
+  title: "居左",
+  default: "0px",
+  placeholder: "请输入居左位置",
+  inCanvas: true,
+});
 const schema = Type.Object({
   display: schemaAllViewport(display),
   src: schemaAllViewport(src),
   link: schemaAllViewport(link),
   width: schemaAllViewport(width),
   height: schemaAllViewport(height),
+  top: schemaAllViewport(top),
+  left: schemaAllViewport(left),
 });
 
 type MoImageSchema = Static<typeof schema>;

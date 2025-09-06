@@ -2,6 +2,7 @@ import Joi from "joi";
 import { response } from "../utils/response.js";
 import { pageDao } from "../dao/index.js";
 import validate from "../middleware/validate.js";
+import { operateLogHandler } from "../middleware/operatelog.js";
 //分为两步，第一步：验证参数，第二步：查询数据
 export class PageController {
     findAll() {
@@ -59,7 +60,7 @@ export class PageController {
             name: Joi.string().optional(),
             content: Joi.string().optional(),
         })
-        const handler = async (req, res) => {
+        const handler = async (req, res, next) => {
             const { id, name, content } = req.body
             pageDao.update(id, name, content).then(result => {
                 if (result.status) {
@@ -68,8 +69,9 @@ export class PageController {
                     res.json(response.fail(result.message))
                 }
             })
+            next()
         }
-        return [validate(rules, 'body'), handler]
+        return [validate(rules, 'body'), handler, operateLogHandler]
     }
     remove() {
         const rules = Joi.object({
