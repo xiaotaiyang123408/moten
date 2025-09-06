@@ -5,7 +5,7 @@ import { removeToken } from '@/utils/storage'
 const router = useRouter()
 const userStore = useUserStore()
 const http = axios.create({
-  baseURL: 'http://localhost:8081',
+  baseURL: 'http://localhost:3000',
   timeout: 30000,
 })
 

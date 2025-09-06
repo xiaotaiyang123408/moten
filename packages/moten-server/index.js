@@ -22,8 +22,8 @@ app.use(expressjwt({
 }))
 //利用unless忽略,这些路径不需要验证
 
-app.listen(8081, () => {
-    console.log("Example app listening on port 8081!");
+app.listen(3000, () => {
+    console.log("Example app listening on port 3000!");
 });
 //页面---第一步：验证参数，第二步：查询数据
 //使用验证库

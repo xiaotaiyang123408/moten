@@ -33,7 +33,7 @@ export class UserController {
                 const { status, message, result } = re
                 if (status) {
                     const [result_data] = result
-                    if (result_data.disable === 1) return res.json(response.accessDenied())
+                    if (result_data?.disable === 1) return res.json(response.accessDenied())
                     //添加token
                     if (result_data) {
                         const token = jwt.sign({ id: result_data.user_id }, SECRET_KEY, { expiresIn: '24h' })

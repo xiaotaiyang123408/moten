@@ -47,7 +47,6 @@ const itemCanvas = (item: any) => {
 }
 const inCanvas = computed(() => edit.currentSelect?.parent === 'canvas')
 const getComponent = (item: any) => {
-  console.log(item, 'item')
   const code = item.properties[edit.viewport].code
   return batchDynamicComponents(code, import.meta.glob('@/components/config/**/*.vue'))
 }

@@ -18,20 +18,35 @@
         <span>发布</span>
       </el-button>
     </div>
+    <el-dialog v-model="dialogTableVisible" title="页面发布" width="700">
+      <el-form :model="pageForm" :rules="pageRules" ref="pageFormRef">
+        <el-form-item label="页面名" prop="name">
+          <el-input v-model="pageForm.name" placeholder="请输入页面名" autocomplete="off" />
+        </el-form-item>
+        <div style="display: flex; justify-content: right; margin: 10px 0">
+          <el-button type="primary" @click="dialogTableVisible = false">取消</el-button>
+          <el-button type="success" @click="submitPageForm(pageFormRef)">提交</el-button>
+        </div>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
+import { createPageApi } from '@/api/page'
 import { findNodeById } from '@/config/nested'
 import { blockSchema, type BlockSchemaKeys } from '@/config/schema'
 import { useEditStore } from '@/stores/edit'
 import type { Viewports } from '@/types/edit'
 import Ajv from 'ajv'
 import AjvErrors from 'ajv-errors'
-import { nextTick, ref, watch } from 'vue'
+import { ElMessage, type FormInstance } from 'element-plus'
+import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const ajv = new Ajv({ allErrors: true })
 ajv.addKeyword({
-  keyword: ['placeholder', 'rules', 'code', 'isCanvas'],
+  keyword: ['placeholder', 'rules', 'code', 'inCanvas'],
 })
 AjvErrors(ajv)
 
@@ -44,20 +59,35 @@ const validateAll = ({ id, value, schema }: VaildateData) => {
   const validate = ajv.compile(schema)
   const valid = validate(value)
   if (!valid) {
-    validate.errors?.forEach(async (item) => {
-      const [, , pathViewport] = item.instancePath.split('/')
+    const path = validate.errors?.[0].instancePath
+    if (path) {
+      const [, , pathViewport] = path.split('/')
       viewport.value = pathViewport as Viewports
-      await nextTick() //确保更新以后在进行渲染
-      edit.setConfigPanelShow(true)
-      edit.setViewports(pathViewport as Viewports)
-      //找到对应id节点，然后填充currentSelect，在配置面板展示
-      findNodeById(edit.blockConfig, id, (params: any) => {
-        const { node } = params
-        edit.setCurrentSelect(node)
-      })
+      setTimeout(() => {
+        edit.setViewports(pathViewport as Viewports)
+      }, 0)
+    }
+    edit.setConfigPanelShow(true)
+    findNodeById(edit.blockConfig, id, (params: any) => {
+      const { node } = params
+      edit.setCurrentSelect(node)
     })
+    console.warn('ajv error: ', id, validate.errors?.[0].instancePath, validate.errors)
+    return true
   }
 }
+
+const dialogTableVisible = ref(false)
+const pageFormRef = ref()
+const pageForm = ref({
+  name: '',
+})
+const pageRules = ref({
+  name: [
+    { required: true, message: '请输入页面名', trigger: 'blur' },
+    { min: 1, max: 20, message: '请至少输入6个字符,最多20个字符', trigger: 'blur' },
+  ],
+})
 const submit = () => {
   const list = edit.blockConfig.map((item) => {
     return {
@@ -66,9 +96,33 @@ const submit = () => {
       schema: blockSchema[item.code as BlockSchemaKeys],
     }
   })
-  list.forEach((item) => {
-    validateAll(item)
+  const hasError = list.some((item) => validateAll(item))
+  if (hasError) {
+    return
+  }
+  dialogTableVisible.value = true
+}
+const submitPageForm = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate(async (valid, fields) => {
+    if (!valid) {
+      console.log('error submit!', fields)
+      return
+    }
   })
+  const res = await createPageApi({
+    name: pageForm.value.name,
+    content: JSON.stringify({ block: edit.blockConfig, page: edit.pageConfig }),
+  })
+  const { code, message } = res
+  if (code === 200) {
+    dialogTableVisible.value = false
+    ElMessage.success('发布成功')
+    //router.go(-1)
+  } else {
+    dialogTableVisible.value = false
+    ElMessage.error(message)
+  }
 }
 const viewport = ref<Viewports>('desktop')
 const edit = useEditStore()
@@ -85,6 +139,7 @@ watch(viewport, (val) => {
 .header {
   width: 100%;
   position: fixed;
+  z-index: 10;
   top: 0;
   left: 0;
   height: var(--edit-header-height);

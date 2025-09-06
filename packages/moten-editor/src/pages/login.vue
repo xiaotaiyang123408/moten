@@ -95,14 +95,15 @@ const submitLogin = async () => {
     username: form.value.username,
     password: form.value.password,
   }
-  const res = await userLoginApi('/rest/v1/user/login', data)
-  if (res.code === 200) {
+  const res = await userLoginApi(data)
+  const { code, message } = res
+  if (code === 200) {
     ElMessage.success('登录成功')
     userStore.setToken(res.data.token)
     userStore.setRoleId(res.data.role_id)
     router.push('/')
   } else {
-    ElMessage.error('登录失败! ' + res.message)
+    ElMessage.error('登录失败! ' + message)
   }
 }
 const submitRegister = async () => {
@@ -117,12 +118,13 @@ const submitRegister = async () => {
     username: form.value.username,
     password: form.value.password,
   }
-  const res = await userRegisterApi('/rest/v1/user/register', data)
-  if (res.code === 200) {
+  const res = await userRegisterApi(data)
+  const { code, message } = res
+  if (code === 200) {
     ElMessage.success('注册成功')
     loginSign.value = true
   } else {
-    ElMessage.error('注册失败! ' + res.message)
+    ElMessage.error('注册失败! ' + message)
   }
 }
 </script>

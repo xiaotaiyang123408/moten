@@ -113,7 +113,6 @@ const props = defineProps({
     default: 1,
   },
 })
-console.log('list', props.list)
 const renderComponentCode = computed(() => {
   return (element: { code: string }) => {
     return COMPONENT_PREFIX + '-' + element.code

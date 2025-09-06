@@ -74,8 +74,8 @@ const schema = Type.Object({
   text: schemaAllViewport(text),
   width: schemaAllViewport(width),
   height: schemaAllViewport(height),
-  top: schemaAllViewport(top),
-  left: schemaAllViewport(left),
+  top: Type.Optional(schemaAllViewport(top)),
+  left: Type.Optional(schemaAllViewport(left)),
 });
 
 type MoTextSchema = Static<typeof schema>;

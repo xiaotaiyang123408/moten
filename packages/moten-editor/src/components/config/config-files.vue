@@ -38,12 +38,10 @@ label.value = title
 const imageUrl = ref('')
 const upload = async (data: any) => {
   const { file } = data
-  console.log(file, 'file')
   await mediaUploadApi(file)
 }
 const handleSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
   imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-  console.log(imageUrl.value, 'imageUrl.value')
 }
 const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
   const imageRegex = /\.(png|jpg|jpeg|gif|bmp|webp)$/i
