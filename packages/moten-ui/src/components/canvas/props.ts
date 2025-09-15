@@ -2,8 +2,8 @@ import type { PropType } from "vue-demi";
 import type { ComponentViewPort } from "@/types/component";
 export type MoCanvasPropsData = {
   display?: {
-    desktop: string;
-    mobile: string;
+    desktop: boolean;
+    mobile: boolean;
   };
   background?: {
     desktop: string;

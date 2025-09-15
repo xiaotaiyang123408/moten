@@ -1,12 +1,7 @@
 <template>
   <div class="config-files">
     <el-form-item :label="label" :prop="key + '.' + viewport">
-      <el-upload
-        :http-request="upload"
-        :show-file-list="false"
-        :on-success="handleSuccess"
-        :before-upload="beforeUpload"
-      >
+      <el-upload :http-request="upload" :show-file-list="false" :before-upload="beforeUpload">
         <template #trigger>
           <el-button type="primary">选择视频</el-button>
         </template>
@@ -38,10 +33,8 @@ label.value = title
 const videoUrl = ref('')
 const upload = async (data: any) => {
   const { file } = data
-  await mediaUploadApi(file)
-}
-const handleSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
-  videoUrl.value = URL.createObjectURL(uploadFile.raw!)
+  const res = await mediaUploadApi(file)
+  videoUrl.value = res.data.url
 }
 const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
   const videoRegex = /\.(mp4|webm|ogg|quicktime)$/i

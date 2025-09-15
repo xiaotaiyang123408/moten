@@ -13,7 +13,7 @@
       @include res(width, 100, 100);
       @include res(height, 100, 100);
       @include res(font-size, 20, 20);
-      @include res(font-weight, bold, bold);
+      font-weight: bold;
     }
   }
 }

@@ -2,14 +2,14 @@
   <div class="header">
     <div class="header-left">
       <div class="block">
-        <v-icon-tooltip content="页面" icon="back" />
+        <v-icon-tooltip content="页面" icon="back" @click="router.go(-1)" />
         <div class="left-item-text">页面</div>
       </div>
       <div class="line"></div>
       <v-select @change="change" v-model="viewport" />
     </div>
     <div>
-      <el-button size="default">
+      <el-button size="default" @click="preview">
         <v-icon icon="preview" />
         <span>预览</span>
       </el-button>
@@ -77,6 +77,14 @@ const validateAll = ({ id, value, schema }: VaildateData) => {
   }
 }
 
+const preview = () => {
+  window.open(
+    'http://localhost:5173/#/?content=' +
+      encodeURIComponent(JSON.stringify({ block: edit.blockConfig, page: edit.pageConfig })),
+    '_blank',
+  )
+  //encodeURIComponent将内容进行转码，保证兼容
+}
 const dialogTableVisible = ref(false)
 const pageFormRef = ref()
 const pageForm = ref({

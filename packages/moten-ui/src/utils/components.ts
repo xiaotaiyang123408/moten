@@ -49,3 +49,7 @@ export function createNameSpaceFn(prefix: string) {
   };
 }
 export const createNameSpace = createNameSpaceFn("mo");
+
+export const renderComponentCode = (element: any) => {
+  return "mo-" + element.code;
+};

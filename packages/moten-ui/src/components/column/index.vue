@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, toRefs } from "vue-demi";
+import { defineComponent } from "vue-demi";
 import { createNameSpace } from "@/utils/components";
 import { props } from "./props";
 const { name, n } = createNameSpace("column");
@@ -20,30 +20,30 @@ const { name, n } = createNameSpace("column");
 export default defineComponent({
   name,
   props,
-  setup(props) {
-    const { data, viewport, children } = toRefs(props);
-    const classes = computed(() => [n()]);
-    const cols = computed(
-      () => data.value?.cols?.[viewport.value] || [0.5, 0.5]
-    );
-    const background = computed(
-      () => data.value?.background?.[viewport.value] || ""
-    );
-    const styles = computed(() => ({ background: background.value }));
-    const itemStyle = computed(() => (item: number) => ({
-      width: `${100 * item}%`,
-    }));
-    const itemComputed = computed(
-      () => (index: number) => children.value?.[index] || []
-    );
+  data() {
     return {
-      classes,
-      cols,
-      background,
-      styles,
-      itemStyle,
-      itemComputed,
+      platform: localStorage.getItem("$platform") || "user",
     };
+  },
+  computed: {
+    classes() {
+      return [n()];
+    },
+    cols() {
+      return this.data?.cols?.[this.viewport] || [0.5, 0.5];
+    },
+    background() {
+      return this.data?.background?.[this.viewport] || "";
+    },
+    styles() {
+      return { background: this.background };
+    },
+    itemStyle() {
+      return (item: number) => ({ height: `${100 * item}%` });
+    },
+    itemComputed() {
+      return (index: number) => this.children?.[index] || [];
+    },
   },
 });
 </script>

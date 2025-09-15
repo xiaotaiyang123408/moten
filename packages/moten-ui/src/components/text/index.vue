@@ -1,58 +1,67 @@
 <script lang="ts">
-import { computed, defineComponent, toRefs } from "vue-demi";
+import { defineComponent } from "vue-demi";
 import { createNameSpace } from "@/utils/components";
 import { props } from "./props";
-import { inject } from "vue-demi";
+// import { inject } from "vue-demi";
 const { name, n } = createNameSpace("text");
 const { n: cannvasN } = createNameSpace("canvas");
-//@ts-ignore
 export default defineComponent({
   name,
   props,
-  setup(props) {
-    const platform = inject("platform") as string;
-    const { data, viewport, parent } = toRefs(props);
-    const classes = computed(() => [n()]);
-    const classCanvas = computed(() => [cannvasN()]);
-    const display = computed(() => {
-      if (typeof data.value?.display?.[viewport.value] === "boolean") {
-        return data.value?.display?.[viewport.value];
-      } else {
-        return true;
-      }
-    });
-    const text = computed(() => data.value?.text?.[viewport.value] || "");
-    const width = computed(() => data.value?.width?.[viewport.value] || "");
-    const height = computed(() => data.value?.height?.[viewport.value] || "");
-    const top = computed(() => data.value?.top?.[viewport.value] || "");
-    const left = computed(() => data.value?.left?.[viewport.value] || "");
-    const displayStyle = computed(() => {
-      if (platform === "editor") {
-        return !display.value
-          ? { opacity: 0.4, filter: "brightness(0.7)" }
-          : {};
-      } else {
-        return !display.value ? { display: "none" } : {};
-      }
-    });
-    const isCanvas = computed(() => parent.value === "canvas");
-    const styles = computed(() => ({
-      width: width.value,
-      height: height.value,
-    }));
-    const stylesPosition = computed(() => {
-      return platform !== "editor" ? { top: top.value, left: left.value } : {};
-    });
+  data() {
     return {
-      classes,
-      classCanvas,
-      display,
-      displayStyle,
-      text,
-      stylesPosition,
-      isCanvas,
-      styles,
+      platform: localStorage.getItem("$platform") || "user",
     };
+  },
+  computed: {
+    classes() {
+      return [n()];
+    },
+    classCanvas() {
+      return [cannvasN()];
+    },
+    displayStyle() {
+      if (this.platform === "editor") {
+        return !this.display ? { opacity: 0.4, filter: "brightness(0.7)" } : {};
+      } else {
+        return !this.display ? { display: "none" } : {};
+      }
+    },
+    display() {
+      if (typeof this.data?.display?.[this.viewport] === "boolean") {
+        return this.data?.display?.[this.viewport];
+      }
+      return true;
+    },
+    text() {
+      return this.data?.text?.[this.viewport] || "";
+    },
+    width() {
+      return this.data?.width?.[this.viewport] || "";
+    },
+    height() {
+      return this.data?.height?.[this.viewport] || "";
+    },
+    top() {
+      return this.data?.top?.[this.viewport] || "";
+    },
+    left() {
+      return this.data?.left?.[this.viewport] || "";
+    },
+    isCanvas() {
+      return this.parent === "canvas";
+    },
+    styles() {
+      return {
+        width: this.width,
+        height: this.height,
+      };
+    },
+    stylesPosition() {
+      return this.platform !== "editor"
+        ? { top: this.top, left: this.left }
+        : {};
+    },
   },
 });
 //mo-image
@@ -71,4 +80,5 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "./index.scss";
+@import "./canvas.scss";
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { computed, defineComponent, toRefs } from "vue-demi";
+import { defineComponent } from "vue-demi";
 import { createNameSpace } from "@/utils/components";
 import { props } from "./props";
 const { name, n } = createNameSpace("link");
@@ -8,26 +8,21 @@ const { name, n } = createNameSpace("link");
 export default defineComponent({
   name,
   props,
-  setup(props) {
-    const { to, target } = toRefs(props);
-    const isExternalLink = computed(() => {
-      return to.value.match(
+  computed: {
+    classes() {
+      return [n()];
+    },
+    isExternalLink() {
+      return this.to.match(
         /^(http:\/\/|https:\/\/|javascript:.*|tel:.*|mailto:.*)/
       );
-    });
-    const classes = computed(() => [n()]);
-    const tag = computed(() => {
-      if (to.value) {
+    },
+    tag() {
+      if (!this.to) {
         return "span";
       }
-      return isExternalLink.value ? "a" : "router-link";
-    });
-    return {
-      classes,
-      tag,
-      target,
-      to,
-    };
+      return this.isExternalLink ? "a" : "router-link";
+    },
   },
 });
 //mo-image

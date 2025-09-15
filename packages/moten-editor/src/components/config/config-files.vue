@@ -5,7 +5,6 @@
         class="avatar-uploader"
         :http-request="upload"
         :show-file-list="false"
-        :on-success="handleSuccess"
         :before-upload="beforeUpload"
       >
         <img v-if="imageUrl" :src="imageUrl" class="avatar" />
@@ -38,10 +37,10 @@ label.value = title
 const imageUrl = ref('')
 const upload = async (data: any) => {
   const { file } = data
-  await mediaUploadApi(file)
-}
-const handleSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
-  imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await mediaUploadApi(formData)
+  imageUrl.value = res.data.url
 }
 const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
   const imageRegex = /\.(png|jpg|jpeg|gif|bmp|webp)$/i

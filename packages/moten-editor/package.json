@@ -25,6 +25,7 @@
     "ajv-errors": "^3.0.0",
     "axios": "^1.11.0",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.18",
     "deepmerge": "^4.3.1",
     "element-plus": "^2.10.7",
     "lodash": "^4.17.21",

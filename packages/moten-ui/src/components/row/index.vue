@@ -7,50 +7,46 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, toRefs } from "vue-demi";
+import { defineComponent } from "vue-demi";
 import { createNameSpace } from "@/utils/components";
 import { props } from "./props";
-import { inject } from "vue-demi";
+// import { inject } from "vue-demi";
 const { name, n } = createNameSpace("row");
 
 export default defineComponent({
   name,
   props,
-  setup(props) {
-    const platform = inject("platform") as string;
-    const { data, viewport, children } = toRefs(props);
-
-    const classes = computed(() => [n()]);
-    const display = computed(() => {
-      if (typeof data.value?.display?.[viewport.value] === "boolean") {
-        return data.value?.display?.[viewport.value];
-      } else {
-        return true;
-      }
-    });
-    const background = computed(
-      () => data.value?.background?.[viewport.value] || ""
-    );
-    const styles = computed(() => ({ background: background.value }));
-
-    const itemComputed = computed(() => children.value?.[0] || []);
-    const displayStyle = computed(() => {
-      if (platform === "editor") {
-        return !display.value
-          ? { opacity: 0.4, filter: "brightness(0.7)" }
-          : {};
-      } else {
-        return !display.value ? { display: "none" } : {};
-      }
-    });
+  data() {
     return {
-      display,
-      classes,
-      displayStyle,
-      background,
-      styles,
-      itemComputed,
+      platform: localStorage.getItem("$platform") || "user",
     };
+  },
+  computed: {
+    itemComputed() {
+      return this.children?.[0] || [];
+    },
+    classes() {
+      return [n()];
+    },
+    displayStyle() {
+      if (this.platform === "editor") {
+        return !this.display ? { opacity: 0.4, filter: "brightness(0.7)" } : {};
+      } else {
+        return !this.display ? { display: "none" } : {};
+      }
+    },
+    display() {
+      if (typeof this.data?.display?.[this.viewport] === "boolean") {
+        return this.data?.display?.[this.viewport];
+      }
+      return true;
+    },
+    background() {
+      return this.data?.background?.[this.viewport] || "";
+    },
+    styles() {
+      return { background: this.background };
+    },
   },
 });
 </script>
